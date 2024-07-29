@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CommandMenu } from "@/components/command-menu";
 import { Metadata } from "next";
@@ -8,6 +8,8 @@ import { GlobeIcon, MailIcon, PhoneIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RESUME_DATA } from "@/data/resume-data";
 import { ProjectCard } from "@/components/project-card";
+import { PublicationCard } from "@/components/publication-card";
+import { PrintDrawer } from "@/components/print-drawer";
 
 export const metadata: Metadata = {
   title: `${RESUME_DATA.name} | ${RESUME_DATA.about}`,
@@ -132,7 +134,13 @@ export default function Page() {
                   </h4>
                 </CardHeader>
                 <CardContent className="mt-2 text-xs print:text-[10px]">
-                  {work.description}
+                  <ul className="list-disc pl-6">
+                    {work.description.map((d) => {
+                      return (
+                        <li key={d}>{d}</li>
+                      )
+                    })}
+                  </ul>
                 </CardContent>
               </Card>
             );
@@ -148,13 +156,28 @@ export default function Page() {
                     <h3 className="font-semibold leading-none">
                       {education.school}
                     </h3>
-                    <div className="text-sm tabular-nums text-gray-500">
-                      {education.start} - {education.end}
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="mt-2 print:text-[12px]">
-                  {education.degree}
+                  {education.degrees.map((degree) => {
+                    return (
+                      <div key={degree.degree}>
+                        <div className="flex items-center justify-between gap-x-2 text-sm">
+                          {degree.degree}
+                          <div className="tabular-nums text-gray-500">
+                            {degree.start} - {degree.end}
+                          </div>
+                        </div>
+                        <CardDescription className="font-mono text-xs print:text-[10px]">
+                          <ul className="list-disc pl-6">
+                            {degree.notes && degree.notes.map((n) => {
+                              return <li key={n}>{n}</li>
+                            })}
+                          </ul>
+                        </CardDescription>
+                      </div>
+                    )
+                  })}
                 </CardContent>
               </Card>
             );
@@ -174,6 +197,23 @@ export default function Page() {
         </Section>
 
         <Section className="print-force-new-page scroll-mb-16">
+          <h2 className="text-xl font-bold">Publications</h2>
+          <div className="-mx-3 grid grid-cols-1 gap-3">
+            {RESUME_DATA.publications.map((p) => {
+              return (
+                <PublicationCard
+                  key={p.title}
+                  title={p.title}
+                  authors={p.authors}
+                  tags={[p.date]}
+                  link={"link" in p ? p.link.href : undefined}
+                />
+              );
+            })}
+          </div>
+        </Section>
+
+        {/* <Section className="print-force-new-page scroll-mb-16">
           <h2 className="text-xl font-bold">Projects</h2>
           <div className="-mx-3 grid grid-cols-1 gap-3 print:grid-cols-3 print:gap-2 md:grid-cols-2 lg:grid-cols-3">
             {RESUME_DATA.projects.map((project) => {
@@ -188,7 +228,7 @@ export default function Page() {
               );
             })}
           </div>
-        </Section>
+        </Section> */}
       </section>
 
       <CommandMenu
